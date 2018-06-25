@@ -1,0 +1,148 @@
+Sir. I learn that i have to impliment a simple module (e.g. pingApp) in StandardHost. But there is not an error in writing but after built this error is occured below.What is wrong? please help me!!!
+
+Description	Resource	Path	Location	Type  make: *** [out/gcc-debug//ONHost.exe] Error 1	ONHost		 	C/C++ Problem
+
+my .ned file
+--------------------
+
+package onhost;
+import inet.applications.pingapp.PingApp;
+import inet.applications.IPingApp;
+
+simple Hoston extends PingApp
+{
+    parameters:
+        @class(Hoston);
+        @display("i=block/fork");
+    
+}
+
+my .cc code
+------------------
+/*
+ * Hoston.cc
+ *
+ *  Created on: 02 Mar 2013
+ *      Author: htc
+ */
+#include <iostream>
+
+
+#include "Hoston.h"
+
+#include "IPvXAddressResolver.h"
+#include "PingPayload_m.h"
+#include "IPv4ControlInfo.h"
+#include "IPv6ControlInfo.h"
+
+
+
+
+Define_Module(Hoston);
+
+
+void Hoston::initialize(int stage)
+{
+    PingApp::initialize(stage);
+    if (stage != 3)
+            return;
+    // because of IPvXAddressResolver, we need to wait until interfaces are registered,
+    // address auto-assignment takes place etc.
+
+
+
+
+
+
+}
+
+void Hoston::handleMessage(cMessage *msg)
+{
+    bubble("message lost");
+    EV << "mesaj geldi" << endl;
+    startTime=2;
+    cMessage *msg1 = new cMessage("sendPing");
+    scheduleAt(startTime, msg1);
+
+}
+
+void Hoston::sendPing()
+{
+    EV << "Host IP address=" << endl;
+    bubble("message lost");
+}
+
+
+
+void Hoston::sendToICMP(cMessage *msg, const IPvXAddress& destAddr, const IPvXAddress& srcAddr, int hopLimit)
+{
+    EV << "Host IP address=" << endl;
+    bubble("message lost");
+}
+
+
+
+
+void Hoston::finish()
+{
+    bubble("message lost");
+    EV << "bitti" << endl;
+
+
+}
+---------------------------
+my .h file 
+---------------------------
+ifndef HOSTON_H_
+#define HOSTON_H_
+
+#include "INETDefs.h"
+#include <omnetpp.h>
+#include "IPvXAddress.h"
+#include "PingApp.h"
+
+
+class Hoston : public PingApp
+{
+public:
+  virtual void initialize(int stage);
+  virtual void handleMessage(cMessage *msg);
+  virtual void finish();
+  virtual void sendPing();
+  virtual void sendToICMP(cMessage *payload, const IPvXAddress& destAddr, const IPvXAddress& srcAddr, int hopLimit);
+protected:
+  virtual int numInitStages() const { return 4; }
+  virtual void processPingResponse(PingPayload *msg);
+  virtual void countPingResponse(int bytes, long seqNo, simtime_t rtt);
+
+protected:
+  // configuration
+  IPvXAddress destAddr;
+  IPvXAddress srcAddr;
+  int packetSize;
+  cPar *sendIntervalp;
+  int hopLimit;
+  int count;
+  simtime_t startTime;
+  simtime_t stopTime;
+  bool printPing;
+
+  // state
+  long sendSeqNo;
+  long expectedReplySeqNo;
+  simtime_t sendTimeHistory[10];
+
+  // statistics
+  cStdDev rttStat;
+  static simsignal_t rttSignal;
+  static simsignal_t numLostSignal;
+  static simsignal_t outOfOrderArrivalsSignal;
+  static simsignal_t pingTxSeqSignal;
+  static simsignal_t pingRxSeqSignal;
+  long lossCount;
+  long outOfOrderArrivalCount;
+  long numPongs;
+
+};
+
+#endif /* HOSTON_H_ */
