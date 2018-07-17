@@ -33,3 +33,7 @@ in the topology XML in "unrolled" form. The topology XML also contains
 the values of parameters that came from ini files during network setup,
 as well as all modules and connections that have been created dynamically
 up to the simulation time the snapshot was taken.
+
+
+
+link http://ict.iiitdmj.ac.in/course/Net_Sim_poster.pdf
